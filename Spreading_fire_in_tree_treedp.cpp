@@ -159,139 +159,6 @@ template <class Fun>
 decltype(auto) y_combinator(Fun &&fun) { return y_combinator_result<std::decay_t<Fun>>(std::forward<Fun>(fun)); }
 
 //---------------------------------------------Snippet area---------------------------------------------------
-namespace number_theory
-{
-  ll mod = 1000000007; // 1000000007 1000000009 998244353 2147483647
-  ll fpow(ll x, ll y)
-  {
-    ll res = 1;
-    x = x % mod;
-    if (x == 0)
-      return 0;
-    while (y > 0)
-    {
-      if (y & 1LL)
-        res = (res * x) % mod;
-      y = y >> 1LL;
-      x = (x * x) % mod;
-    }
-    return res;
-  }
-  bool isPowerOfTwo(int n)
-  {
-    if (n == 0)
-      return false;
-    return (ceil(log2(n)) == floor(log2(n)));
-  }
-  ll inv(ll a, ll p = mod) { return fpow(a, p - 2); }
-  bool isPerfectSquare(ll x)
-  {
-    if (x >= 0)
-    {
-      ll sr = sqrt(x);
-      return (sr * sr == x);
-    }
-    return false;
-  }
-  ll gcd(ll x, ll y)
-  {
-    if (x == 0)
-      return y;
-    if (y == 0)
-      return x;
-    return gcd(y, x % y);
-  }
-  bool isprime(ll n)
-  {
-    if (n <= 1)
-      return false;
-    if (n <= 3)
-      return true;
-
-    if (n % 2 == 0 || n % 3 == 0)
-      return false;
-
-    for (ll i = 5; i * i <= n; i += 6)
-      if (n % i == 0 || n % (i + 2) == 0)
-        return false;
-
-    return true;
-  }
-
-  bool prime[15000105];
-  void sieve(int n)
-  {
-    for (ll i = 0; i <= n; i++)
-      prime[i] = 1;
-    for (ll p = 2; p * p <= n; p++)
-    {
-      if (prime[p] == true)
-      {
-        for (ll i = p * p; i <= n; i += p)
-          prime[i] = false;
-      }
-    }
-    prime[1] = prime[0] = 0;
-  }
-
-  vector<ll> primelist;
-  bool __primes_generated__ = 0;
-
-  void genprimes(int n)
-  {
-    __primes_generated__ = 1;
-    sieve(n + 1);
-    for (ll i = 2; i <= n; i++)
-      if (prime[i])
-        primelist.push_back(i);
-  }
-
-  vector<ll> factors(ll n)
-  {
-    if (!__primes_generated__)
-    {
-      cerr << "Call genprimes you dope" << endl;
-      exit(1);
-    }
-    vector<ll> facs;
-
-    for (ll i = 0; primelist[i] * primelist[i] <= n && i < primelist.size(); i++)
-    {
-      if (n % primelist[i] == 0)
-      {
-        while (n % primelist[i] == 0)
-        {
-          n /= primelist[i];
-          facs.push_back(primelist[i]);
-        }
-      }
-    }
-    if (n > 1)
-    {
-      facs.push_back(n);
-    }
-    sort(facs.begin(), facs.end());
-    return facs;
-  }
-
-  vector<ll> getdivs(ll n)
-  {
-    vector<ll> divs;
-    for (ll i = 1; i * i <= n; i++)
-    {
-      if (n % i == 0)
-      {
-        divs.push_back(i);
-        divs.push_back(n / i);
-      }
-    }
-
-    getunique(divs);
-    return divs;
-  }
-}
-
-using namespace number_theory;
 
 //---------------------------------------------End Snippet area-----------------------------------------------
 #define int long long
@@ -300,7 +167,7 @@ signed main()
 {
   fast_io;
   int t = 1;
-  cin >> t;
+  // cin >> t;
   Fo(i, 1, t)
   { // eprintf("--- Case #%lld start ---\n", i);eprintf("Case #%lld: ", i);solve();eprintf("--- Case #%lld end ---\n", i);eprintf("time = %.5lf\n", getCurrentTime());eprintf("++++++++++++++++++++\n");
     solve();
@@ -310,14 +177,34 @@ signed main()
 
 void solve()
 {
-  int L, R;
-  cin >> L >> R;
-  string nodR = to_string(R);
-  int ndr = sz(nodR) - 1;
-  int uptoR = fpow(10, ndr);
-  string nodL = to_string(L - 1);
-  int ndl = sz(nodL) - 1;
-  int uptoL = fpow(10, ndl);
-
-  print(uptoR - uptoL);
+  int n;
+  cin >> n;
+  int e = n - 1;
+  vvi g(n + 1);
+  while (e--)
+  {
+    int u, v;
+    cin >> u >> v;
+    g[u].pb(v), g[v].pb(u);
+  }
+  vi dp(n + 1);
+  y_combinator([&](auto self, int curr, int parent) -> void
+               {
+                 vi children_values;
+                 for (auto nb : g[curr])
+                 {
+                   if (nb == parent)
+                     continue;
+                   self(nb, curr);
+                   children_values.pb(dp[nb]);
+                 }
+                 sort(rall(children_values));
+                 dp[curr] = 0;
+                 int sec = 1;
+                 for (auto x : children_values)
+                 {
+                   dp[curr] = max(dp[curr], x + sec);
+                   sec++;
+                 } })(1, 0);
+  print(dp[1]);
 }
