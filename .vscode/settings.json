@@ -18,6 +18,9 @@
         "chrono": "cpp",
         "latch": "cpp",
         "limits": "cpp",
-        "semaphore": "cpp"
+        "semaphore": "cpp",
+        "complex": "cpp",
+        "sstream": "cpp",
+        "vector": "cpp"
     }
 }
