@@ -310,14 +310,5 @@ signed main()
 
 void solve()
 {
-  int L, R;
-  cin >> L >> R;
-  string nodR = to_string(R);
-  int ndr = sz(nodR) - 1;
-  int uptoR = fpow(10, ndr);
-  string nodL = to_string(L - 1);
-  int ndl = sz(nodL) - 1;
-  int uptoL = fpow(10, ndl);
-
-  print(uptoR - uptoL);
+  // could not solve this problem sorry...
 }
